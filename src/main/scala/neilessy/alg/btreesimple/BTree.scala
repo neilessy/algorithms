@@ -167,7 +167,7 @@ case class Branch[K <: Comparable[K],V]( before: BTree[K,V], entries: List[(K,V,
   private[btreesimple] def childFor( key: K ) =
     (zipHeadWithTail(entries) find { e =>
       val (_, tail) = e
-      (tail.isEmpty || tail.head._1.compareTo(key) > 0)
+      tail.isEmpty || tail.head._1.compareTo(key) > 0
     }).get._1._3
   private[btreesimple] def lastChild = entries.last._3
   @tailrec private[btreesimple] final def updateChild( o: BTree[K,V], n: BTree[K,V], entries: List[(K,V,BTree[K,V])], prior: List[(K,V,BTree[K,V])] ): List[(K,V,BTree[K,V])] =
@@ -196,14 +196,6 @@ case class Branch[K <: Comparable[K],V]( before: BTree[K,V], entries: List[(K,V,
       val head::tail = entries
       if ( head._1.compareTo(entry._1) > 0 ) prior reverse_::: entry :: entries
       else insertEntry( entry, tail, head :: prior )
-    }
-  private[btreesimple] def getLeftRight( key: K ): (BTree[K,V],BTree[K,V]) = getLeftRight( key, before, entries )
-  @tailrec private def getLeftRight( key: K, left: BTree[K,V], entries: List[(K,V,BTree[K,V])] ): (BTree[K,V],BTree[K,V]) =
-    if ( entries.isEmpty ) throw new RuntimeException("!")
-    else {
-      val head::tail = entries
-      if ( head._1.compareTo(key) == 0 ) ((left,head._3))
-      else getLeftRight( key, head._3, tail )
     }
   private[btreesimple] def owns( key: K ) = !(entries forall { _._1.compareTo(key) != 0 })
   private[btreesimple] def getHere( key: K ) = entries find { _._1.compareTo( key ) == 0 } map { _._2 }
